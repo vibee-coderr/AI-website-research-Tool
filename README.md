@@ -1,68 +1,124 @@
-# AI Equity Research Tool
+# AI Article Research Assistant
 
-An AI-powered news research application that helps users understand financial and business news by asking questions about articles.
+An AI-powered research assistant that extracts content from web articles and answers user questions using **Retrieval-Augmented Generation (RAG)**.
 
-The application uses **Retrieval-Augmented Generation (RAG)** to retrieve relevant information from news articles and generate answers using a locally running language model.
+The application uses LangChain, HuggingFace embeddings, FAISS vector search and a locally running LLM through Ollama. It provides a React frontend and FastAPI backend for an interactive article research experience.
 
 ## Features
 
-- Load news articles using URLs.
-- Extract and split article content into smaller text chunks.
-- Generate text embeddings using HuggingFace.
-- Store and retrieve relevant information using FAISS.
-- Ask questions about the processed news articles.
-- Generate answers using Ollama (Llama 3.2).
-- View the retrieved source content and original article links.
-- Simple dark-themed interface built with Streamlit.
+- **Article Processing:** Extract text from web articles using their URLs.
+- **Text Chunking:** Split extracted content into smaller chunks for efficient retrieval.
+- **Semantic Search:** Generate embeddings using HuggingFace sentence-transformer models.
+- **Vector Database:** Store and retrieve article embeddings using FAISS.
+- **AI-Powered Answers:** Generate context-aware answers using Ollama and Llama 3.2.
+- **Source References:** Display retrieved article sources alongside generated answers.
+- **Persistent Storage:** Save and reload the FAISS vector database.
+- **REST API:** Manage article processing and question answering through FastAPI.
+- **Interactive Frontend:** Use a React interface to process articles and ask questions.
 
-## Technologies Used
+## Tech Stack
 
-| Technology | Purpose |
+| Category | Technologies |
 |---|---|
-| Python | Main programming language |
-| Streamlit | User interface |
-| LangChain | RAG pipeline |
-| HuggingFace | Text embeddings |
-| FAISS | Vector storage and similarity search |
-| Ollama | Local language model |
-| Llama 3.2 (3B) | Answer generation |
+| Frontend | React, Vite, CSS |
+| Backend | Python, FastAPI |
+| API Communication | Axios |
+| LLM Framework | LangChain |
+| Language Model | Ollama, Llama 3.2 (3B) |
+| Embeddings | HuggingFace, all-MiniLM-L6-v2 |
+| Vector Database | FAISS |
+| Article Extraction | UnstructuredURLLoader |
+| Validation | Pydantic |
 
-## How It Works
+## System Architecture
 
-1. The user enters news article URLs.
-2. The application extracts the article content.
-3. The extracted text is divided into smaller chunks.
-4. HuggingFace generates embeddings for the text chunks.
-5. FAISS stores the embeddings for similarity search.
-6. When a question is entered, relevant chunks are retrieved.
-7. The retrieved content is passed to the Llama 3.2 model through Ollama.
-8. The model generates an answer based on the retrieved news content.
+```text
+             User
+              |
+              v
+       React Frontend
+              |
+           Axios
+              |
+              v
+       FastAPI Backend
+              |
+       Article Processing
+              |
+              v
+       UnstructuredURLLoader
+              |
+              v
+        Text Chunking
+              |
+              v
+     HuggingFace Embeddings
+              |
+              v
+        FAISS Vector DB
+              |
+        User Question
+              |
+              v
+       Semantic Search
+              |
+              v
+       Relevant Chunks
+              |
+              v
+        Ollama LLM
+         Llama 3.2
+              |
+              v
+      Generated Answer
+              |
+              v
+      Sources + Answer
+         React UI
+```
 
-### OUTPUTS 
+## Project Structure
 
-<br>
-<img width="1277" height="599" alt="image" src="https://github.com/user-attachments/assets/5c833118-68c2-47dd-bdc9-11e86db0e86d" />
-<br>
-<img width="1279" height="598" alt="image" src="https://github.com/user-attachments/assets/c662d58b-5ff4-4573-b466-c2232ef217c3" />
-<br>
-<img width="1277" height="599" alt="image" src="https://github.com/user-attachments/assets/b9ac0fd9-0a1a-48f8-b1ae-21db0cdcab5f" />
-
+```text
+AI-Article-Research-Assistant/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── routes.py
+│   ├── rag_pipeline.py
+│   └── config.py
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── package.json
+│   └── vite.config.js
+│
+├── faiss_index/
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
 
 ## Installation and Setup
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/vibee-coderr/AI-Equity-Research-Tool-.git
-```
-
-### 2. Navigate to the project folder
-
-```bash
 cd AI-Equity-Research-Tool-
 ```
 
-### 3. Create a virtual environment
+### 2. Create a Python Virtual Environment
 
 ```bash
 python -m venv venv
@@ -70,61 +126,153 @@ python -m venv venv
 
 Activate it on Windows:
 
-```bash
+```powershell
 venv\Scripts\activate
 ```
 
-### 4. Install dependencies
+### 3. Install Backend Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Install Ollama
+### 4. Install and Configure Ollama
 
 Download Ollama from:
 
-https://ollama.com/download/windows
+https://ollama.com/
 
-Pull the required model:
+Download the required model:
 
 ```bash
 ollama pull llama3.2:3b
 ```
 
-Make sure Ollama is running before starting the application.
+Make sure Ollama is running before asking questions.
 
-### 6. Run the application
+### 5. Start the FastAPI Backend
+
+From the project root:
 
 ```bash
-streamlit run main.py
+uvicorn app.main:app --reload
 ```
 
-The application will open in your browser.
+Backend URL:
 
-## Usage
+`http://127.0.0.1:8000`
 
-1. Open the application.
-2. Enter one or more news article URLs in the sidebar.
-3. Click **Process Articles**.
-4. Wait for the articles to be processed and stored in FAISS.
-5. Enter a question related to the processed articles.
-6. Click **Generate Answer**.
-7. View the generated answer and retrieved source content.
+Interactive API documentation:
 
-## Note
+`http://127.0.0.1:8000/docs`
 
-- An internet connection is required to load news articles and download the embedding model when needed.
-- Ollama runs the language model locally.
-- Answer quality depends on the content extracted from the provided articles.
-- This project focuses on news-based research and does not provide financial advice or stock price predictions.
+### 6. Set Up the React Frontend
+
+Open another terminal:
+
+```bash
+cd frontend
+npm install
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Open the local URL displayed in your terminal, usually:
+
+`http://localhost:5173`
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Check whether the API is running |
+| GET | `/health` | Check API and Ollama availability |
+| GET | `/status` | Check vector database status |
+| POST | `/process-urls` | Extract and process article URLs |
+| POST | `/ask` | Ask questions about processed articles |
+
+### Example: Process Articles
+
+**POST** `/process-urls`
+
+Request:
+
+```json
+{
+  "urls": [
+    "https://example.com/article"
+  ]
+}
+```
+
+### Example: Ask a Question
+
+**POST** `/ask`
+
+Request:
+
+```json
+{
+  "question": "What are the main points discussed in the article?"
+}
+```
+
+The response includes the generated answer and retrieved source references.
+
+
+## Working Outputs
+
+<img width="1279" height="602" alt="image" src="https://github.com/user-attachments/assets/01bb1f53-293e-4a6f-87be-1fc10c30b684" />
+<br>
+<br>
+<img width="1279" height="603" alt="image" src="https://github.com/user-attachments/assets/fff4f45e-84c3-4912-b3ce-04b92110f322" />
+<br>
+<br>
+<img width="1279" height="605" alt="image" src="https://github.com/user-attachments/assets/8a581fa5-8b78-44f9-80d1-34a91f874c8a" />
+<br>
+<br>
+
+## How It Works
+
+1. The user provides article URLs through the React interface.
+2. FastAPI receives the URLs and extracts article content.
+3. The extracted content is divided into smaller text chunks.
+4. HuggingFace generates vector embeddings for the chunks.
+5. FAISS stores the embeddings for semantic retrieval.
+6. When a user asks a question, FAISS retrieves relevant chunks.
+7. The retrieved context is passed to the Llama 3.2 model through Ollama.
+8. The model generates an answer using the provided article content.
+9. The answer and source references are displayed in React.
+
+## Important Notes
+
+- The application is designed to run locally.
+- Ollama and the required language model must be installed separately.
+- The FAISS index is generated locally and is not included in the GitHub repository.
+- Process article URLs again to generate a new index if one is not available.
+- Article extraction depends on website accessibility and page structure. Some websites may restrict automated extraction.
+- The project uses local embeddings and a local LLM, avoiding paid API requirements.
 
 ## Future Improvements
 
-- Improve news article extraction.
-- Support more financial news sources.
-- Improve source referencing and retrieval accuracy.
+- Conversation history for follow-up questions.
+- Improved retrieval using hybrid search.
+- Support for PDF document uploads.
+- Streaming AI responses.
+- Better article metadata and source management.
+
+## Author
+
+**Kamalesh R**
+
+B.Tech – Artificial Intelligence and Data Science
+
+GitHub: https://github.com/vibee-coderr
 
 ---
 
-**Developed as a learning project to explore Retrieval-Augmented Generation, vector databases, and local language models.**
+*Built to explore Retrieval-Augmented Generation, semantic search, local LLMs and full-stack AI application development.*
